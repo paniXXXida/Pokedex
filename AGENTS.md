@@ -48,9 +48,18 @@ There are five required features. Each needs a feature spec and a GitHub issue. 
 - `src/components/`: reusable UI components. Components must not contain API requests or SQL.
 - `src/hooks/`: data hooks and shared React logic. Hooks call services and expose state/actions to UI.
 - `src/services/`: API requests, SQLite operations, and shared data infrastructure. Services must not depend on screens.
-- `src/constants/theme.ts`: shared design tokens. Use the existing theme instead of scattering colors, spacing, and radii through components.
-- Existing theme helpers: `src/hooks/use-theme.ts` and `src/hooks/use-color-scheme.ts`. Inspect their current exports before using them.
+- `src/constants/theme.ts`: shared design tokens (`Colors`, `TypeColors`, `Fonts`, `Spacing`, `Radius`, `Shadow`). Light theme only. Use it instead of scattering colors, spacing, and radii through components.
+- `src/utils/`: pure helpers without React, API or SQL.
 - Reuse existing shared clients, providers, database initialization, and components. Do not introduce a second QueryClient, API client, or database initialization path for another feature.
+- Shared infrastructure that exists now:
+  - `src/app/_layout.tsx`: root `Stack` (`(tabs)` + `pokemon/[id]`), the only `QueryClientProvider`, splash held until fonts load.
+  - `src/app/(tabs)/_layout.tsx`: JavaScript `Tabs` (Pokémons / Favorites / Compare) styled per platform after Figma.
+  - `src/services/query-client.ts`: the one `QueryClient`.
+  - `src/hooks/use-app-fonts.ts`: loads Rubik (`assets/fonts/`) with Expo Font, with retry; `src/components/font-load-error.tsx` is its error screen.
+  - `src/components/app-text.tsx`: `AppText`, Rubik text with variants. Use it instead of a bare `Text`.
+  - `src/components/tab-icon.tsx`: tab icon from a Figma PNG or an `expo-symbols` symbol.
+  - `src/components/screen-placeholder.tsx`: temporary screen content; remove it once no screen uses it.
+  - `src/utils/pokemon-id.ts`: `parsePokemonId` for validating the `id` route param.
 - As shared infrastructure is implemented, add its real path and purpose to this section. Do not describe proposed files as existing. Keep this list synchronized with renames.
 - Follow this separation without unnecessary architecture. Do not introduce a backend, authentication, Redux, a dependency-injection framework, or broad refactors without an agreed need.
 

@@ -69,7 +69,10 @@ Find a Pokémon and look at its details.
 ## Shared constraints
 
 - Follow the [Figma design](https://www.figma.com/design/dsgGXcu5WELIvRW90m5308/Pok%C3%A9mon-Code-Challenge?node-id=1-2)
-  (verified through the student's read-only copy). Figma sizes are the reference at 390 pt
+  (the teacher's original stays the reference). For Figma MCP access use the student's
+  [working copy](https://www.figma.com/design/N2Kici8MxbWeuIZH3lCFrX/Pokemon-Code-Challenge--Copy-?node-id=15-2863);
+  the phone screens are on its "Mobile" page (node `0:1`), icons on "Icons" (`1:13808`).
+  Figma sizes are the reference at 390 pt
   screen width; layouts adapt to the available width without horizontal overflow and respect
   safe areas. Where the mockup's data is wrong (Charmander #003, Pikachu 024, "7,0 kg"), API data wins.
 - **Platforms**: shared screens, cards, colours and Detail tabs. Only these follow the platform's
@@ -80,6 +83,14 @@ Find a Pokémon and look at its details.
 - **Navigation**: bottom tabs Pokémons / Favorites / Compare. Compare is added because the
   feature is mandatory and has no design; it uses the same tab style. Detail is a stack screen on
   top of the tabs.
+  - The tab bar uses Expo Router's JavaScript `Tabs`, not native tabs. Changed during Setup (#1):
+    native tabs on iOS 26 use the system "Liquid Glass" bar, which ignores the background and
+    cannot reproduce the Figma bar; JS tabs draw the design's bar on both platforms.
+  - Icons: the Pokéball and heart exported from Figma (PNG 1x/2x/3x), recoloured per state.
+    iOS: active Purple, inactive Midnight. Android: active icon white on a Purple 64 × 32 pill
+    with a Midnight label, inactive `#67678C` (sampled from the Figma bar).
+  - Compare has no icon in the design: two opposite arrows, SF Symbol `arrow.left.arrow.right`
+    on iOS and Material Symbol `compare_arrows` on Android (`expo-symbols`).
 - **Numbers**: the `/pokemon` id everywhere, zero-padded to at least 3 digits ("001", "1025", "10033").
 - **Names**: API name for display, hyphens shown as spaces, each word capitalised ("mr-mime" → "Mr Mime").
 - **States**: every API and database load has a loading state and an error state with
@@ -101,7 +112,10 @@ Find a Pokémon and look at its details.
   Steel `#5A8FA1`, Fire `#FF4F68`, Water `#4D90D6`, Grass `#64BC55`, Electric `#FFCF00`,
   Psychic `#830CB9`, Ice `#7DE0D0`, Dragon `#0670BE`, Dark `#5C5262`, Fairy `#EB90E6`,
   Unknown `#B6B6B6`, Shadow `#5B5265`.
-- **Splash**: Daylight background with the Pokémon logo from the design, centred.
+- **Splash**: Daylight background with the Pokémon logo from the design, centred (216 pt wide).
+  Limitation: Expo Go shows the app icon instead of the configured splash (Expo SDK 58
+  splash-screen docs), so this splash is only visible in a development or production build.
+  In Expo Go we only check that the app starts without a font flash.
 
 ## Technical core
 
