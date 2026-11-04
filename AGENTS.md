@@ -59,7 +59,16 @@ There are five required features. Each needs a feature spec and a GitHub issue. 
   - `src/components/app-text.tsx`: `AppText`, Rubik text with variants. Use it instead of a bare `Text`.
   - `src/components/tab-icon.tsx`: tab icon from a Figma PNG or an `expo-symbols` symbol.
   - `src/components/screen-placeholder.tsx`: temporary screen content; remove it once no screen uses it.
-  - `src/utils/pokemon-id.ts`: `parsePokemonId` for validating the `id` route param.
+  - `src/utils/pokemon-id.ts`: `parsePokemonId` for validating the `id` route param; `idFromResourceUrl` for ids in PokeAPI urls.
+  - `src/utils/pokemon-format.ts`: `formatPokemonNumber` ("001"), `formatPokemonName` ("Mr Mime"), `buildShareMessage`.
+  - `src/services/pokeapi.ts`: the only PokeAPI client. `fetchCatalogueIndex` (complete index), `fetchPokemon`, `spriteUrl`, `ApiError` (PokeAPI answered wrongly) and `describeLoadError` (separates that from "PokeAPI not reached").
+  - `src/hooks/use-catalogue.ts`: `useCatalogue`, query key `['catalogue']`, loaded once per run; List and Search share it.
+  - `src/hooks/use-pokemon.ts`: `pokemonQueryOptions(id)`, query key `['pokemon', id]`; shared by Share, Detail and Compare. Extend it; do not add a second `/pokemon/{id}` query.
+  - `src/hooks/use-share-pokemon.ts`: system Share from the cached Pokémon query; ignores repeated taps, and `cancel()` drops a pending share.
+  - `src/components/pokemon-grid.tsx`: two-column `FlatList` with fixed row heights (`getItemLayout`), a header slot and the options sheet; reuse it for Search and Favorites.
+  - `src/components/pokemon-card.tsx`: the list card (`CARD_FOOTER_HEIGHT` keeps every row the same height).
+  - `src/components/pokemon-options-sheet.tsx`: the "⋮" sheet (Open Pokémon / favorites / Share), iOS and Android variants.
+  - `src/components/load-state.tsx`: `LoadingState`, and `ErrorState` with Try again, for every load.
 - As shared infrastructure is implemented, add its real path and purpose to this section. Do not describe proposed files as existing. Keep this list synchronized with renames.
 - Follow this separation without unnecessary architecture. Do not introduce a backend, authentication, Redux, a dependency-injection framework, or broad refactors without an agreed need.
 

@@ -12,6 +12,14 @@ export const Colors = {
   white: '#FFFFFF',
   /** Inactive tab icon and label on Android (sampled from the Figma navigation bar). */
   androidTabInactive: '#67678C',
+  /** iOS options sheet (Figma): row background, separator lines, Cancel, icons and Cancel label, row labels. */
+  iosSheetRow: '#F0F0F0',
+  iosSheetSeparator: '#DADADA',
+  iosSheetCancel: '#FEFEFE',
+  iosAction: '#006DF8',
+  iosSheetLabel: '#000000',
+  /** Dimmed screen behind the options sheet (agreed value; not in Figma). */
+  backdrop: 'rgba(0, 0, 0, 0.3)',
 } as const;
 
 /** Keys are the type names used by PokeAPI. */
@@ -56,6 +64,8 @@ export const Radius = {
   card: 8,
   badge: 4,
   chip: 99,
+  /** iOS options sheet groups and Cancel. */
+  sheet: 16,
 } as const;
 
 /** Card shadow: #303773 at 15%, offset 0/2, blur 15. */

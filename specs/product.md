@@ -99,8 +99,9 @@ Find a Pokémon and look at its details.
 - **Fonts**: Rubik from the course's `fonts.zip`, loaded with Expo Font (only the weights used:
   Regular, Medium, SemiBold, Bold; no `__MACOSX` files). Rubik Bold replaces the design's
   Cabinet Grotesk titles and Rubik Regular replaces the Inter search placeholder, because the
-  assignment supplies only Rubik. Tab labels, the back label and the options sheet use the system
-  font, as in the design.
+  assignment supplies only Rubik. Tab labels, the back label and the iOS options sheet use the
+  system font, as in the design. The Android options sheet uses Rubik Medium 16, as in its
+  Figma mockup (clarified during List, #2).
 - **Theme tokens** (`src/constants/theme.ts`), from Figma: Midnight `#0E0940` (text),
   Purple `#5631E8` (accent, badges, active tab, stat bars), Daylight `#EDF6FF` (screen background),
   Silver `#DBDAE6` (inactive tab line, bar track), card image background `#F6F6FF`, white cards

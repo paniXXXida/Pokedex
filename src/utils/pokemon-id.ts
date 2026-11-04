@@ -4,3 +4,9 @@ export function parsePokemonId(param: string | string[] | undefined): number | n
   const id = Number(param);
   return Number.isSafeInteger(id) ? id : null;
 }
+
+/** Returns the id at the end of a PokeAPI resource url (".../pokemon/25/" → 25), or null. */
+export function idFromResourceUrl(url: string): number | null {
+  const match = /\/(\d+)\/?$/.exec(url);
+  return match === null ? null : parsePokemonId(match[1]);
+}

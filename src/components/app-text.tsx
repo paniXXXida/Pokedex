@@ -15,9 +15,11 @@ const styles = StyleSheet.create({
   base: {
     color: Colors.midnight,
   },
+  // Line heights are 120% of the font size, as in Figma.
   title: {
     fontFamily: Fonts.bold,
     fontSize: 24,
+    lineHeight: 28.8,
   },
   body: {
     fontFamily: Fonts.regular,
@@ -26,5 +28,6 @@ const styles = StyleSheet.create({
   medium: {
     fontFamily: Fonts.medium,
     fontSize: 16,
+    lineHeight: 19.2,
   },
 });
