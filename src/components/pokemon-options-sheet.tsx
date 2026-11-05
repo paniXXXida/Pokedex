@@ -13,6 +13,7 @@ import {
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Colors, Fonts, Radius } from '@/constants/theme';
+import { useFavoriteToggle } from '@/hooks/use-favorites';
 import { useSharePokemon } from '@/hooks/use-share-pokemon';
 import type { CatalogueEntry } from '@/services/pokeapi';
 
@@ -47,10 +48,20 @@ export function PokemonOptionsSheet({
   onOpenPokemon,
 }: PokemonOptionsSheetProps) {
   const { state: shareState, share, cancel } = useSharePokemon();
+  const favorite = useFavoriteToggle(pokemon);
+  const favoriteMessage = favoriteMessageFor(favorite);
+  // While the list is unreadable or outdated, the row only reads it again (no Add/Remove).
+  const favoriteNeedsRetry = favorite.readError !== null;
 
   function close() {
     cancel();
+    favorite.reset();
     onClose();
+  }
+
+  function toggleFavorite() {
+    // The sheet closes once the write and the re-read of the list have both succeeded.
+    favorite.toggle(close);
   }
 
   function openPokemon() {
@@ -75,15 +86,28 @@ export function PokemonOptionsSheet({
         label="Open Pokémon"
         onPress={openPokemon}
       />
-      {/* The favorites action is wired in issue #4. */}
+      {favoriteMessage !== null && <SheetRow icon={null} label={favoriteMessage} />}
       <SheetRow
         icon={
-          <Image
-            source={require('@/assets/images/tab-favorite.png')}
-            style={{ tintColor: iconColor }}
-          />
+          favorite.busy ? (
+            <ActivityIndicator color={iconColor} />
+          ) : (
+            // Assumption (favorites.md): the same outline heart for Add and Remove.
+            <Image
+              source={require('@/assets/images/tab-favorite.png')}
+              style={{ tintColor: iconColor }}
+            />
+          )
         }
-        label="Add to favorites"
+        label={
+          favoriteNeedsRetry
+            ? 'Try again'
+            : favorite.isFavorite
+              ? 'Remove from favorites'
+              : 'Add to favorites'
+        }
+        busy={favorite.busy}
+        onPress={favoriteNeedsRetry ? favorite.retryRead : toggleFavorite}
       />
       {shareState.status === 'error' && <SheetRow icon={null} label={shareState.message} />}
       <SheetRow
@@ -122,6 +146,27 @@ export function PokemonOptionsSheet({
       </SafeAreaProvider>
     </Modal>
   );
+}
+
+type FavoriteStatus = Pick<ReturnType<typeof useFavoriteToggle>, 'readError' | 'error'>;
+
+/**
+ * The message above the favorites row. A failed write and a failed re-read after a successful
+ * write are different: in the second case the change is saved, only the list is not refreshed.
+ */
+function favoriteMessageFor({ readError, error }: FavoriteStatus): string | null {
+  if (readError !== null) {
+    if (error?.kind === 'refresh') {
+      return error.action === 'add'
+        ? 'Added to favorites, but the list could not be refreshed.'
+        : 'Removed from favorites, but the list could not be refreshed.';
+    }
+    return readError === 'failed' ? 'Could not load favorites.' : 'Favorites could not be refreshed.';
+  }
+  if (error?.kind === 'write') {
+    return error.action === 'add' ? 'Could not add to favorites.' : 'Could not remove from favorites.';
+  }
+  return null;
 }
 
 type SheetLayoutProps = {

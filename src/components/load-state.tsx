@@ -37,25 +37,61 @@ export function ErrorState({ title, message, retrying, onRetry }: ErrorStateProp
   );
 }
 
+type RefreshErrorProps = {
+  message: string;
+  retrying: boolean;
+  onRetry: () => void;
+};
+
+/**
+ * A failed refresh while the old data stays on screen: a compact message with Try again above
+ * that data, instead of replacing it with the full `ErrorState`.
+ */
+export function RefreshError({ message, retrying, onRetry }: RefreshErrorProps) {
+  return (
+    <View style={styles.refreshError}>
+      <AppText style={styles.message}>{message}</AppText>
+      <Pressable
+        accessibilityRole="button"
+        disabled={retrying}
+        onPress={onRetry}
+        style={({ pressed }) => [styles.button, (pressed || retrying) && styles.buttonDimmed]}>
+        <AppText style={styles.buttonLabel}>{retrying ? 'Loading…' : 'Try again'}</AppText>
+      </Pressable>
+    </View>
+  );
+}
+
 type EmptyStateProps = {
   title: string;
+  /** Optional hint below the title, for example how to add the first favorite. */
+  message?: string;
 };
 
 /**
  * Loaded data without entries, for example a search without matches. Not an error, so no
  * Try again. It sits at the top of the list area, so an open keyboard does not cover it.
  */
-export function EmptyState({ title }: EmptyStateProps) {
+export function EmptyState({ title, message }: EmptyStateProps) {
   return (
     <View style={styles.empty}>
       <AppText variant="medium">{title}</AppText>
+      {message !== undefined && <AppText style={styles.message}>{message}</AppText>}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  // Assumption (favorites.md): the empty hint and the refresh error are not measured in Figma;
+  // 8 and 12 are agreed spacings until they are compared with the mockups.
   empty: {
     alignItems: 'center',
+    gap: 8,
+  },
+  refreshError: {
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: Spacing.gap,
   },
   container: {
     flex: 1,

@@ -68,7 +68,10 @@ There are five required features. Each needs a feature spec and a GitHub issue. 
   - `src/components/pokemon-grid.tsx`: two-column `FlatList` with fixed row heights (`getItemLayout`), a measured header slot (it carries its own spacing to the first row and may change height), an optional `empty` element, a `ref` to the list, keyboard handling (drag closes it, taps work while it is open) and the options sheet; reuse it for Search and Favorites.
   - `src/components/pokemon-card.tsx`: the list card (`CARD_FOOTER_HEIGHT` keeps every row the same height).
   - `src/components/pokemon-options-sheet.tsx`: the "⋮" sheet (Open Pokémon / favorites / Share), iOS and Android variants.
-  - `src/components/load-state.tsx`: `LoadingState`, `ErrorState` with Try again, for every load, and `EmptyState` for loaded data without entries.
+  - `src/components/load-state.tsx`: `LoadingState`, `ErrorState` with Try again, for every load, `EmptyState` (title + optional hint) for loaded data without entries, and `RefreshError` (message + Try again) above data kept after a failed refresh.
+  - `src/services/database.ts`: `getDatabase()`, the only SQLite open + table-creation path; a failure at any stage resets it so a retry runs again.
+  - `src/services/favorites.ts`: `getFavorites` (newest first), `addFavorite` (`INSERT OR IGNORE`), `removeFavorite`; parameterized SQL, rows checked.
+  - `src/hooks/use-favorites.ts`: `favoritesQueryOptions` (key `['favorites']`, `networkMode: 'always'`, `retry: false`), `useFavorites`, and `useFavoriteToggle(entry)` for the options sheet and the Detail heart: write, then an awaited real re-read; separate write/refresh errors; `canToggle` only on up-to-date data.
   - `src/components/search-field.tsx`: `SearchField`, the design's search field showing the raw query; Android back arrow exits search.
   - `src/utils/pokemon-search.ts`: `normalizeSearchText` and `filterByName`, the on-phone name search over the catalogue index.
 - As shared infrastructure is implemented, add its real path and purpose to this section. Do not describe proposed files as existing. Keep this list synchronized with renames.
@@ -81,6 +84,8 @@ There are five required features. Each needs a feature spec and a GitHub issue. 
 - Use query keys that distinguish resources and their parameters. Reuse cached data where suitable; handle background failures without unnecessarily discarding usable data.
 - Fetch evolution data through the API's resource links. Pokémon, species, and evolution-chain IDs are not interchangeable. Handle branching chains, Pokémon without evolutions, and missing artwork.
 - Keep database operations in services and use parameterized SQL. Handle duplicate favorites, repeated taps, and failed writes. Update or invalidate the relevant cache after mutations so all screens remain consistent without restarting.
+- When screens need the cache to be current after a write, actually re-read the data and await the result. A skipped or failed re-read is not success. Report a failed write and a failed re-read after a successful write separately, and never offer an action based on data known to be outdated.
+- Local SQLite queries and mutations use `networkMode: 'always'`, so the network state never pauses them. A shared initialisation promise is reset when any of its stages fails, so a retry runs every stage again in the same app run.
 - Use React Native components and touch interactions, including `Pressable`. Use a virtualized list for the catalogue, with stable keys. Respect safe areas and keyboard behavior.
 - For full-screen `Modal`s drawn under the system bars, measure safe-area insets inside the Modal's window with a local `SafeAreaProvider`; do not rely on the insets of the screen behind it.
 - Reuse design tokens and components. Avoid hardcoded domain data, duplicated styles, unexplained constants, and new abstractions that do not solve a current problem.
