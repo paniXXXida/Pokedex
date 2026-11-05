@@ -37,7 +37,26 @@ export function ErrorState({ title, message, retrying, onRetry }: ErrorStateProp
   );
 }
 
+type EmptyStateProps = {
+  title: string;
+};
+
+/**
+ * Loaded data without entries, for example a search without matches. Not an error, so no
+ * Try again. It sits at the top of the list area, so an open keyboard does not cover it.
+ */
+export function EmptyState({ title }: EmptyStateProps) {
+  return (
+    <View style={styles.empty}>
+      <AppText variant="medium">{title}</AppText>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
+  empty: {
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
     alignItems: 'center',

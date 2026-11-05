@@ -10,7 +10,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Colors, Fonts, Radius } from '@/constants/theme';
 import { useSharePokemon } from '@/hooks/use-share-pokemon';
@@ -46,7 +46,6 @@ export function PokemonOptionsSheet({
   onClose,
   onOpenPokemon,
 }: PokemonOptionsSheetProps) {
-  const insets = useSafeAreaInsets();
   const { state: shareState, share, cancel } = useSharePokemon();
 
   function close() {
@@ -91,11 +90,13 @@ export function PokemonOptionsSheet({
         icon={
           shareState.status === 'loading' ? (
             <ActivityIndicator color={iconColor} />
+          ) : isIos ? (
+            <SymbolView name="square.and.arrow.up" size={ICON_SIZE} tintColor={iconColor} />
           ) : (
-            <SymbolView
-              name={{ ios: 'square.and.arrow.up', android: 'share' }}
-              size={ICON_SIZE}
-              tintColor={iconColor}
+            // Android share icon (three connected dots), exported from Figma.
+            <Image
+              source={require('@/assets/images/share-android.png')}
+              style={[styles.iconImage, { tintColor: iconColor }]}
             />
           )
         }
@@ -114,28 +115,46 @@ export function PokemonOptionsSheet({
       onRequestClose={close}
       statusBarTranslucent
       navigationBarTranslucent>
-      <View style={styles.root}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Close menu"
-          onPress={close}
-          style={[StyleSheet.absoluteFill, styles.backdrop]}
-        />
-        {isIos ? (
-          <View style={[styles.iosSheet, { paddingBottom: insets.bottom + IOS_BOTTOM_SPACING }]}>
-            <View style={styles.iosGroup}>{rows}</View>
-            <Pressable
-              accessibilityRole="button"
-              onPress={close}
-              style={({ pressed }) => [styles.iosCancel, pressed && styles.pressed]}>
-              <Text style={styles.iosCancelLabel}>Cancel</Text>
-            </Pressable>
-          </View>
-        ) : (
-          <View style={[styles.androidSheet, { paddingBottom: insets.bottom }]}>{rows}</View>
-        )}
-      </View>
+      {/* The Modal is its own window, drawn under the system bars. Its insets are measured in
+          that window: the screen behind it can report a different bottom inset. */}
+      <SafeAreaProvider>
+        <SheetLayout onClose={close}>{rows}</SheetLayout>
+      </SafeAreaProvider>
     </Modal>
+  );
+}
+
+type SheetLayoutProps = {
+  onClose: () => void;
+  children: ReactNode;
+};
+
+/** Backdrop plus the platform sheet, kept above the Modal window's bottom system area. */
+function SheetLayout({ onClose, children }: SheetLayoutProps) {
+  const insets = useSafeAreaInsets();
+
+  return (
+    <View style={styles.root}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Close menu"
+        onPress={onClose}
+        style={[StyleSheet.absoluteFill, styles.backdrop]}
+      />
+      {isIos ? (
+        <View style={[styles.iosSheet, { paddingBottom: insets.bottom + IOS_BOTTOM_SPACING }]}>
+          <View style={styles.iosGroup}>{children}</View>
+          <Pressable
+            accessibilityRole="button"
+            onPress={onClose}
+            style={({ pressed }) => [styles.iosCancel, pressed && styles.pressed]}>
+            <Text style={styles.iosCancelLabel}>Cancel</Text>
+          </Pressable>
+        </View>
+      ) : (
+        <View style={[styles.androidSheet, { paddingBottom: insets.bottom }]}>{children}</View>
+      )}
+    </View>
   );
 }
 

@@ -106,7 +106,8 @@ Find a Pokémon and look at its details.
   Purple `#5631E8` (accent, badges, active tab, stat bars), Daylight `#EDF6FF` (screen background),
   Silver `#DBDAE6` (inactive tab line, bar track), card image background `#F6F6FF`, white cards
   with radius 8 and soft shadow `#303773` at 15% (offset 0/2, blur 15). Screen padding 24,
-  search field inset 16, grid gap 16. Badge: Purple, radius 4, Rubik Medium 10, white.
+  search field inset 16 (white, radius 8, card shadow; text `#000000`, placeholder `#000000` at
+  30%), grid gap 16. Badge: Purple, radius 4, Rubik Medium 10, white.
   Type chip: Midnight at 8%, radius 99, 12 pt colour dot, Rubik SemiBold 16.
 - **Type colours** (Figma "Types" page): Normal `#9099A2`, Fighting `#CE3F6A`, Flying `#93A9E2`,
   Poison `#AB6AC8`, Ground `#D87645`, Rock `#C4BA85`, Bug `#8FBF2B`, Ghost `#546AA6`,

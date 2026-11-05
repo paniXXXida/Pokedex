@@ -19,7 +19,8 @@ or share it from the card's options menu.
   Title "All Pokémon": Rubik Bold 24, line height 120% (28.8), Midnight. Its height is 29, so the
   first row starts at Y=45 inside the container. Rows are 342 × 211 with a horizontal gap of 16.
   The container's Y=140 in the mockup includes the search field from [Search](./search.md), so it
-  is not the app's top padding.
+  is not the app's top padding: the title starts 32 below the fixed search field (Search #3
+  replaced the interim top padding of 24).
 - Card: Purple number badge at top-left (8, 8), sprite on `#F6F6FF` (placeholder if it fails),
   name in Rubik Medium 16 on one line with ellipsis, and a 24 pt "⋮" button. Figma details:
   - Image: a 163 × 163 layer at (0, 0), image fill in Fill mode; the transparent margin is part
@@ -50,7 +51,9 @@ or share it from the card's options menu.
   - Android (Figma): full width, white `#FFFFFF`, radius 0, no Cancel. The whole bottom block
     is 390 × 196 including the system navigation area. Labels in Rubik Medium 16, line height
     120% (19.2), Midnight. Open icon 18 × 18 at (3, 3), Midnight. Share uses the Android share
-    icon (three connected dots). The row height and padding were not measured.
+    icon (three connected dots), exported from Figma as `assets/images/share-android.png`
+    (1x/2x/3x, whole 24 × 24 frame) and tinted Midnight; added during Search (#3), replacing the
+    system symbol. The row height and padding were not measured.
 - Share needs types and the species name, which the index does not have. It uses the same
   cached `/pokemon/{id}` query as Detail: cached → share at once; not cached → the Share row
   shows a waiting state and the sheet stays open; failure → a message in the sheet with Try again.

@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
-import { type ReactElement, useState } from 'react';
-import { FlatList, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { type ReactElement, type Ref, useState } from 'react';
+import { FlatList, Keyboard, StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { CARD_FOOTER_HEIGHT, PokemonCard } from '@/components/pokemon-card';
 import { PokemonOptionsSheet } from '@/components/pokemon-options-sheet';
@@ -11,15 +11,24 @@ const COLUMNS = 2;
 
 type PokemonGridProps = {
   pokemon: CatalogueEntry[];
-  /** Scrolls with the grid above the first row, for example the screen title. */
+  /**
+   * Scrolls with the grid above the first row, for example the screen title. Its height is
+   * measured, so it includes its own spacing to the first row and may change (Search hides the
+   * title); `getItemLayout` then uses the new height.
+   */
   header: ReactElement;
+  /** Shown below the header when `pokemon` is empty, for example "No Pokémon found". */
+  empty?: ReactElement;
+  /** The underlying list, for example to scroll back to the top when the results change. */
+  ref?: Ref<FlatList<CatalogueEntry>>;
 };
 
 /**
  * Two-column virtualized grid of Pokémon cards with the options menu, shared by List, Search
- * and Favorites. A card opens Detail; "⋮" opens the options sheet.
+ * and Favorites. A card opens Detail; "⋮" opens the options sheet. Dragging the grid closes the
+ * keyboard, and taps on cards work while it is open.
  */
-export function PokemonGrid({ pokemon, header }: PokemonGridProps) {
+export function PokemonGrid({ pokemon, header, empty, ref }: PokemonGridProps) {
   const { width: windowWidth } = useWindowDimensions();
   const [headerHeight, setHeaderHeight] = useState(0);
   const [menuPokemon, setMenuPokemon] = useState<CatalogueEntry | null>(null);
@@ -31,6 +40,7 @@ export function PokemonGrid({ pokemon, header }: PokemonGridProps) {
   const rowLength = cardWidth + CARD_FOOTER_HEIGHT + Spacing.gap;
 
   function openMenu(entry: CatalogueEntry) {
+    Keyboard.dismiss();
     setMenuPokemon(entry);
     setMenuVisible(true);
   }
@@ -38,6 +48,7 @@ export function PokemonGrid({ pokemon, header }: PokemonGridProps) {
   return (
     <>
       <FlatList
+        ref={ref}
         data={pokemon}
         numColumns={COLUMNS}
         keyExtractor={(entry) => String(entry.id)}
@@ -50,12 +61,11 @@ export function PokemonGrid({ pokemon, header }: PokemonGridProps) {
           />
         )}
         ListHeaderComponent={
-          <View
-            onLayout={(event) => setHeaderHeight(event.nativeEvent.layout.height)}
-            style={styles.header}>
+          <View onLayout={(event) => setHeaderHeight(event.nativeEvent.layout.height)}>
             {header}
           </View>
         }
+        ListEmptyComponent={empty}
         // All rows have the same height, so their positions are calculated instead of measured.
         // With columns, `index` is the row index; offsets start below the measured header.
         getItemLayout={(_, index) => ({
@@ -65,6 +75,9 @@ export function PokemonGrid({ pokemon, header }: PokemonGridProps) {
         })}
         columnWrapperStyle={styles.row}
         contentContainerStyle={styles.content}
+        keyboardDismissMode="on-drag"
+        // The first tap on a card or "⋮" works while the keyboard is open.
+        keyboardShouldPersistTaps="handled"
       />
       <PokemonOptionsSheet
         pokemon={menuPokemon}
@@ -77,16 +90,13 @@ export function PokemonGrid({ pokemon, header }: PokemonGridProps) {
 }
 
 function openPokemon(entry: CatalogueEntry) {
+  Keyboard.dismiss();
   router.push({ pathname: '/pokemon/[id]', params: { id: String(entry.id) } });
 }
 
 const styles = StyleSheet.create({
   content: {
     paddingHorizontal: Spacing.screen,
-  },
-  // Figma: 16 between the title and the first row.
-  header: {
-    paddingBottom: Spacing.gap,
   },
   // Figma: 16 between the cards of a row and between rows.
   row: {

@@ -65,10 +65,12 @@ There are five required features. Each needs a feature spec and a GitHub issue. 
   - `src/hooks/use-catalogue.ts`: `useCatalogue`, query key `['catalogue']`, loaded once per run; List and Search share it.
   - `src/hooks/use-pokemon.ts`: `pokemonQueryOptions(id)`, query key `['pokemon', id]`; shared by Share, Detail and Compare. Extend it; do not add a second `/pokemon/{id}` query.
   - `src/hooks/use-share-pokemon.ts`: system Share from the cached Pokémon query; ignores repeated taps, and `cancel()` drops a pending share.
-  - `src/components/pokemon-grid.tsx`: two-column `FlatList` with fixed row heights (`getItemLayout`), a header slot and the options sheet; reuse it for Search and Favorites.
+  - `src/components/pokemon-grid.tsx`: two-column `FlatList` with fixed row heights (`getItemLayout`), a measured header slot (it carries its own spacing to the first row and may change height), an optional `empty` element, a `ref` to the list, keyboard handling (drag closes it, taps work while it is open) and the options sheet; reuse it for Search and Favorites.
   - `src/components/pokemon-card.tsx`: the list card (`CARD_FOOTER_HEIGHT` keeps every row the same height).
   - `src/components/pokemon-options-sheet.tsx`: the "⋮" sheet (Open Pokémon / favorites / Share), iOS and Android variants.
-  - `src/components/load-state.tsx`: `LoadingState`, and `ErrorState` with Try again, for every load.
+  - `src/components/load-state.tsx`: `LoadingState`, `ErrorState` with Try again, for every load, and `EmptyState` for loaded data without entries.
+  - `src/components/search-field.tsx`: `SearchField`, the design's search field showing the raw query; Android back arrow exits search.
+  - `src/utils/pokemon-search.ts`: `normalizeSearchText` and `filterByName`, the on-phone name search over the catalogue index.
 - As shared infrastructure is implemented, add its real path and purpose to this section. Do not describe proposed files as existing. Keep this list synchronized with renames.
 - Follow this separation without unnecessary architecture. Do not introduce a backend, authentication, Redux, a dependency-injection framework, or broad refactors without an agreed need.
 
@@ -80,6 +82,7 @@ There are five required features. Each needs a feature spec and a GitHub issue. 
 - Fetch evolution data through the API's resource links. Pokémon, species, and evolution-chain IDs are not interchangeable. Handle branching chains, Pokémon without evolutions, and missing artwork.
 - Keep database operations in services and use parameterized SQL. Handle duplicate favorites, repeated taps, and failed writes. Update or invalidate the relevant cache after mutations so all screens remain consistent without restarting.
 - Use React Native components and touch interactions, including `Pressable`. Use a virtualized list for the catalogue, with stable keys. Respect safe areas and keyboard behavior.
+- For full-screen `Modal`s drawn under the system bars, measure safe-area insets inside the Modal's window with a local `SafeAreaProvider`; do not rely on the insets of the screen behind it.
 - Reuse design tokens and components. Avoid hardcoded domain data, duplicated styles, unexplained constants, and new abstractions that do not solve a current problem.
 - Validate route parameters and handle missing/invalid resources without crashing. Do not hide problems with broad type assertions, `@ts-ignore`, or disabled lint rules.
 

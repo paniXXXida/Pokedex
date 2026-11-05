@@ -20,6 +20,9 @@ export const Colors = {
   iosSheetLabel: '#000000',
   /** Dimmed screen behind the options sheet (agreed value; not in Figma). */
   backdrop: 'rgba(0, 0, 0, 0.3)',
+  /** Search field (Figma iOS): typed text and magnifier #000000, placeholder #000000 at 30%. */
+  searchText: '#000000',
+  searchPlaceholder: 'rgba(0, 0, 0, 0.3)',
 } as const;
 
 /** Keys are the type names used by PokeAPI. */
