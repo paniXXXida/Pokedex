@@ -132,14 +132,14 @@ Find a Pokémon and look at its details.
 
 ## Technical core
 
-- [ ] Runs in Expo Go
-- [ ] Live data through TanStack Query
-- [ ] At least 2 screens with Expo Router
-- [ ] Something in SQLite that survives a restart
-- [ ] Loading and error state on every load
-- [ ] One native feature: Share, in the card options menu ("⋮")
-- [ ] TypeScript and ESLint without errors
-- [ ] UI, data and logic in separate files
+- [x] Runs in Expo Go (iPhone via QR; Android Emulator Medium Phone API 37 via `exp://` URL; a physical Xiaomi via QR on 2026-11-04, before the icon changes; see #1)
+- [x] Live data through TanStack Query (catalogue, Pokémon, species and evolution chain from the live PokeAPI through the one `QueryClient`; see #2, #5)
+- [x] At least 2 screens with Expo Router (three tabs, `pokemon/[id]` and `compare-picker/[slot]`; see #1, #6)
+- [x] Something in SQLite that survives a restart: favorites. Added entries, their order and a removal survive a full Expo Go close **on iPhone** (#4). Android: open in #7
+- [x] Loading and error state on every load. Triggered on a device: catalogue (iPhone + Android Emulator, #2), Detail and the evolution chain (iPhone, #5), Share (#2), favorites read, init, write and refresh (iPhone, #4; heart: #5), each Compare slot (iPhone; Android without a separate Try again, #6). The Rubik error screen is checked by code only (#1)
+- [x] One native feature: Share, in the card options menu ("⋮") (iPhone and Android Emulator, sent through Telegram; see #2)
+- [x] TypeScript and ESLint without errors (`npx tsc --noEmit` and `npx expo lint` exit 0 on 1e1349c)
+- [x] UI, data and logic in separate files (API requests and SQL only in `src/services/`, queries in `src/hooks/`, pure logic in `src/utils/`, screens in `src/app/`)
 
 ## Optional
 
