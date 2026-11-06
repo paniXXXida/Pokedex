@@ -54,15 +54,15 @@ Find any Pokémon by typing part of its name, including Pokémon I have not scro
 
 ## Acceptance Criteria
 
-- [ ] Typing "pika" or "PIKA" shows Pikachu (and other names containing "pika").
-- [ ] Right after launch, without scrolling, "pecharunt" finds Pecharunt (#1025).
-- [ ] "mr mime" and "mr-mime" both find Mr Mime.
-- [ ] While the query is not empty, the "All Pokémon" title is hidden and the results use the same
+- [x] Typing "pika" or "PIKA" shows Pikachu (and other names containing "pika").
+- [x] Right after launch, without scrolling, "pecharunt" finds Pecharunt (#1025).
+- [x] "mr mime" and "mr-mime" both find Mr Mime.
+- [x] While the query is not empty, the "All Pokémon" title is hidden and the results use the same
       cards with a working "⋮" menu.
-- [ ] A query without matches shows the empty state "No Pokémon found" (not an error).
-- [ ] Clearing the query shows the full list again.
-- [ ] The keyboard does not hide results; on Android the field shows a back arrow while typing.
-- [ ] No extra API requests: filtering uses the catalogue index from [List](./list.md).
+- [x] A query without matches shows the empty state "No Pokémon found" (not an error).
+- [x] Clearing the query shows the full list again.
+- [x] The keyboard does not hide results; on Android the field shows a back arrow while typing.
+- [x] No extra API requests: filtering uses the catalogue index from [List](./list.md).
 
 ## Out of Scope
 
