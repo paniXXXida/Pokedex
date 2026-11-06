@@ -23,6 +23,12 @@ export const Colors = {
   /** Search field (Figma iOS): typed text and magnifier #000000, placeholder #000000 at 30%. */
   searchText: '#000000',
   searchPlaceholder: 'rgba(0, 0, 0, 0.3)',
+  /** Shades/Grey (Figma): the Stats bar track. */
+  grey: '#F3F3F7',
+  /** Type chip background: Midnight at 8%. */
+  typeChip: 'rgba(14, 9, 64, 0.08)',
+  /** iOS Detail header (Figma scroll state): Daylight at 50%; the design's blur is left out. */
+  headerTranslucent: 'rgba(237, 246, 255, 0.5)',
 } as const;
 
 /** Keys are the type names used by PokeAPI. */

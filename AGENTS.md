@@ -63,12 +63,17 @@ There are five required features. Each needs a feature spec and a GitHub issue. 
   - `src/utils/pokemon-format.ts`: `formatPokemonNumber` ("001"), `formatPokemonName` ("Mr Mime"), `buildShareMessage`.
   - `src/services/pokeapi.ts`: the only PokeAPI client. `fetchCatalogueIndex` (complete index), `fetchPokemon`, `spriteUrl`, `ApiError` (PokeAPI answered wrongly) and `describeLoadError` (separates that from "PokeAPI not reached").
   - `src/hooks/use-catalogue.ts`: `useCatalogue`, query key `['catalogue']`, loaded once per run; List and Search share it.
-  - `src/hooks/use-pokemon.ts`: `pokemonQueryOptions(id)`, query key `['pokemon', id]`; shared by Share, Detail and Compare. Extend it; do not add a second `/pokemon/{id}` query.
+  - `src/hooks/use-pokemon.ts`: `pokemonQueryOptions(id)`, query key `['pokemon', id]` (no retry on 404), `usePokemon`, `isNotFound`; shared by Share, Detail and Compare. Extend it; do not add a second `/pokemon/{id}` query. `Pokemon` carries types, species id, height, weight, base experience, abilities, `stats` and `artworkUrl`.
+  - `src/hooks/use-evolution.ts`: `speciesQueryOptions` (`['pokemon-species', speciesId]`), `evolutionChainQueryOptions` (`['evolution-chain', chainId]`), and `useEvolution(pokemon)` → loading / error with retry of the failed queries / cards (default Pokémon per species node, `current` by species id).
+  - `src/utils/evolution-rows.ts`: `evolutionRows(tree)`, the pre-order rows (indent, connector, guide lines) that keep every parent → child link.
+  - `src/utils/pokemon-stats.ts`: `STATS` (keys + labels in order), `MAX_BASE_STAT` (255), `statFraction`; for Detail and Compare.
+  - `src/utils/favorite-message.ts`: `favoriteMessage`, the favorites write/read/refresh texts shared by the options sheet and the Detail heart.
+  - `src/components/type-chip.tsx`, `src/components/pokemon-image.tsx` (square image with the "?" placeholder), `src/components/favorite-button.tsx` (header heart from Figma PNGs), `src/components/pokemon-about.tsx`, `src/components/pokemon-stats.tsx`, `src/components/evolution-tree.tsx`: the Detail parts.
   - `src/hooks/use-share-pokemon.ts`: system Share from the cached Pokémon query; ignores repeated taps, and `cancel()` drops a pending share.
   - `src/components/pokemon-grid.tsx`: two-column `FlatList` with fixed row heights (`getItemLayout`), a measured header slot (it carries its own spacing to the first row and may change height), an optional `empty` element, a `ref` to the list, keyboard handling (drag closes it, taps work while it is open) and the options sheet; reuse it for Search and Favorites.
   - `src/components/pokemon-card.tsx`: the list card (`CARD_FOOTER_HEIGHT` keeps every row the same height).
   - `src/components/pokemon-options-sheet.tsx`: the "⋮" sheet (Open Pokémon / favorites / Share), iOS and Android variants.
-  - `src/components/load-state.tsx`: `LoadingState`, `ErrorState` with Try again, for every load, `EmptyState` (title + optional hint) for loaded data without entries, and `RefreshError` (message + Try again) above data kept after a failed refresh.
+  - `src/components/load-state.tsx`: `LoadingState`, `ErrorState` with Try again (or another `actionLabel`, such as Back on "Pokémon not found"), for every load, `EmptyState` (title + optional hint) for loaded data without entries, and `RefreshError` (message + Try again) above data kept after a failed refresh.
   - `src/services/database.ts`: `getDatabase()`, the only SQLite open + table-creation path; a failure at any stage resets it so a retry runs again.
   - `src/services/favorites.ts`: `getFavorites` (newest first), `addFavorite` (`INSERT OR IGNORE`), `removeFavorite`; parameterized SQL, rows checked.
   - `src/hooks/use-favorites.ts`: `favoritesQueryOptions` (key `['favorites']`, `networkMode: 'always'`, `retry: false`), `useFavorites`, and `useFavoriteToggle(entry)` for the options sheet and the Detail heart: write, then an awaited real re-read; separate write/refresh errors; `canToggle` only on up-to-date data.
@@ -89,6 +94,7 @@ There are five required features. Each needs a feature spec and a GitHub issue. 
 - Use React Native components and touch interactions, including `Pressable`. Use a virtualized list for the catalogue, with stable keys. Respect safe areas and keyboard behavior.
 - For full-screen `Modal`s drawn under the system bars, measure safe-area insets inside the Modal's window with a local `SafeAreaProvider`; do not rely on the insets of the screen behind it.
 - Reuse design tokens and components. Avoid hardcoded domain data, duplicated styles, unexplained constants, and new abstractions that do not solve a current problem.
+- Use the design's own exported icons and measured styles. Replace them with a system symbol or a simpler style only where the design has none, and never rewrite the spec so an easier implementation fits (corrected in #5: Figma heart PNGs instead of SF/Material hearts; the iOS header stays Daylight at 50% instead of opaque).
 - Validate route parameters and handle missing/invalid resources without crashing. Do not hide problems with broad type assertions, `@ts-ignore`, or disabled lint rules.
 
 ## One issue, one development cycle
@@ -99,6 +105,8 @@ There are five required features. Each needs a feature spec and a GitHub issue. 
 4. Implement only the approved issue. Ask before adding dependencies or materially expanding the plan. Update the same plan comment as work progresses; edit the known comment rather than an unrelated last comment. Tick only completed tasks.
 5. Review the diff against every acceptance criterion and the allowed scope. Explain significant changes and run lint, typecheck, and relevant existing tests. Fix causes rather than hiding symptoms.
 6. Give me a short phone-test checklist, including failure and empty states. I must review and test. Do not mark a phone check passed without my confirmation or actual device evidence.
+   - Tick per item and per platform. A general "it works" does not confirm deliberately triggered failures, Try again, or exact counts.
+   - Temporary failure simulations are marked `TEMP-SIM` and fail a fixed number of times (the first load plus the query's retries), so Try again recovers while Metro keeps running and no code changes during the test. Copy the files first; after the run, remove the simulations, compare the files with the copies, and search for `TEMP-SIM` before committing.
 7. Ask me to explain the data flow and key decisions in my own words. Use two or three focused questions, correct misunderstandings, and answer follow-ups before moving on.
 8. Turn real corrections into concise, reusable rules in this file. Record new shared infrastructure here. Do not invent a correction merely to produce an instruction update.
 9. After review and verification, commit the relevant changes with the real issue number, for example `Add catalogue search, closes #3`. Use the agreed Git workflow, inspect staged changes, and verify closure after the commit reaches the repository's default branch. A local commit alone does not close a GitHub issue.

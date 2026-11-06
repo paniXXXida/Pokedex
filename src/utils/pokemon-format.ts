@@ -12,6 +12,16 @@ export function formatPokemonName(apiName: string): string {
     .join(' ');
 }
 
+/** API weight in hectograms → kilograms with a decimal point: 69 → "6.9 kg". */
+export function formatWeight(hectograms: number): string {
+  return `${hectograms / 10} kg`;
+}
+
+/** API height in decimetres → metres with a decimal point: 7 → "0.7 m". */
+export function formatHeight(decimetres: number): string {
+  return `${decimetres / 10} m`;
+}
+
 type ShareablePokemon = {
   id: number;
   name: string;

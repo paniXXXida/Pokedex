@@ -1,4 +1,11 @@
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  type StyleProp,
+  StyleSheet,
+  View,
+  type ViewStyle,
+} from 'react-native';
 
 import { AppText } from '@/components/app-text';
 import { Colors, Fonts, Radius, Spacing } from '@/constants/theme';
@@ -18,10 +25,18 @@ type ErrorStateProps = {
   /** True while Try again is loading: the button is disabled to avoid repeated requests. */
   retrying: boolean;
   onRetry: () => void;
+  /** Button text when the way out is not a retry, for example "Back" for "Pokémon not found". */
+  actionLabel?: string;
 };
 
 /** A failed load with Try again. Same layout as the font error screen, in Rubik. */
-export function ErrorState({ title, message, retrying, onRetry }: ErrorStateProps) {
+export function ErrorState({
+  title,
+  message,
+  retrying,
+  onRetry,
+  actionLabel = 'Try again',
+}: ErrorStateProps) {
   return (
     <View style={styles.container}>
       <AppText variant="medium">{title}</AppText>
@@ -31,7 +46,7 @@ export function ErrorState({ title, message, retrying, onRetry }: ErrorStateProp
         disabled={retrying}
         onPress={onRetry}
         style={({ pressed }) => [styles.button, (pressed || retrying) && styles.buttonDimmed]}>
-        <AppText style={styles.buttonLabel}>{retrying ? 'Loading…' : 'Try again'}</AppText>
+        <AppText style={styles.buttonLabel}>{retrying ? 'Loading…' : actionLabel}</AppText>
       </Pressable>
     </View>
   );
@@ -41,15 +56,16 @@ type RefreshErrorProps = {
   message: string;
   retrying: boolean;
   onRetry: () => void;
+  style?: StyleProp<ViewStyle>;
 };
 
 /**
  * A failed refresh while the old data stays on screen: a compact message with Try again above
  * that data, instead of replacing it with the full `ErrorState`.
  */
-export function RefreshError({ message, retrying, onRetry }: RefreshErrorProps) {
+export function RefreshError({ message, retrying, onRetry, style }: RefreshErrorProps) {
   return (
-    <View style={styles.refreshError}>
+    <View style={[styles.refreshError, style]}>
       <AppText style={styles.message}>{message}</AppText>
       <Pressable
         accessibilityRole="button"

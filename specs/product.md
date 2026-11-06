@@ -104,7 +104,8 @@ Find a Pokémon and look at its details.
   Figma mockup (clarified during List, #2).
 - **Theme tokens** (`src/constants/theme.ts`), from Figma: Midnight `#0E0940` (text),
   Purple `#5631E8` (accent, badges, active tab, stat bars), Daylight `#EDF6FF` (screen background),
-  Silver `#DBDAE6` (inactive tab line, bar track), card image background `#F6F6FF`, white cards
+  Silver `#DBDAE6` (inactive tab line), Shades/Grey `#F3F3F7` (stat bar track, measured in #5),
+  card image background `#F6F6FF`, white cards
   with radius 8 and soft shadow `#303773` at 15% (offset 0/2, blur 15). Screen padding 24,
   search field inset 16 (white, radius 8, card shadow; text `#000000`, placeholder `#000000` at
   30%), grid gap 16. Badge: Purple, radius 4, Rubik Medium 10, white.
