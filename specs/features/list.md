@@ -61,6 +61,11 @@ or share it from the card's options menu.
   `https://www.pokemon.com/us/pokedex/<species-name>`, all in the message text so it works on both
   platforms. A form keeps its own name in the text ("Venusaur Mega #10033 — Grass, Poison"); its
   link goes to the base species ("…/pokedex/venusaur").
+- Loading state on Home (added in Setup #1, 2026-11-06): while the index has no data (the first
+  load, and a Try again after it failed), the loading area below the search field and the title
+  shows `assets/images/pokemon-logo.png` at 216 × 79 on Daylight, above the loading indicator.
+  It is shown only for the real load time: no timer, no delay. Expo Go does not show the native
+  splash, so this is the app's first visible logo there. Other screens keep the plain indicator.
 - Colours, spacing, radii and shadow from `src/constants/theme.ts`. No new dependencies.
 
 ## Acceptance Criteria

@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText } from '@/components/app-text';
@@ -56,7 +56,14 @@ export default function PokemonListScreen() {
               onRetry={() => catalogue.refetch()}
             />
           ) : (
-            <LoadingState />
+            // The app's first visible screen in Expo Go, which does not show the native splash.
+            <LoadingState>
+              <Image
+                source={require('@/assets/images/pokemon-logo.png')}
+                style={styles.logo}
+                accessibilityIgnoresInvertColors
+              />
+            </LoadingState>
           )}
         </View>
       )}
@@ -85,5 +92,10 @@ const styles = StyleSheet.create({
   stateContainer: {
     flex: 1,
     paddingHorizontal: Spacing.screen,
+  },
+  // Same width as the native splash logo (app.json); 648 × 237 source, aspect ratio kept.
+  logo: {
+    width: 216,
+    height: 79,
   },
 });

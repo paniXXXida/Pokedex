@@ -115,10 +115,20 @@ Find a Pokémon and look at its details.
   Steel `#5A8FA1`, Fire `#FF4F68`, Water `#4D90D6`, Grass `#64BC55`, Electric `#FFCF00`,
   Psychic `#830CB9`, Ice `#7DE0D0`, Dragon `#0670BE`, Dark `#5C5262`, Fairy `#EB90E6`,
   Unknown `#B6B6B6`, Shadow `#5B5265`.
-- **Splash**: Daylight background with the Pokémon logo from the design, centred (216 pt wide).
-  Limitation: Expo Go shows the app icon instead of the configured splash (Expo SDK 58
-  splash-screen docs), so this splash is only visible in a development or production build.
-  In Expo Go we only check that the app starts without a font flash.
+- **Splash**: the native splash (`expo-splash-screen` plugin) is configured with the Pokémon logo
+  from the design, centred, 216 pt wide, on Daylight `#EDF6FF`. The app icon is the same logo on
+  `#EDF6FF`.
+  - Expo Go does not show this native splash (Expo SDK 58 splash-screen docs).
+  - Observed on 2026-11-06 in Expo Go, on an iPhone and on the Android Emulator (Medium Phone,
+    API 37): launch showed the name "Pokédex" in black on a white background, then the catalogue
+    opened. The icon URL served by Metro returned the correct colour logo. Why Expo Go shows the
+    name instead of the icon has not been established.
+  - The native splash's appearance in a release build is not verified. It was accepted for
+    submission without that check (decision in #1, 2026-11-06).
+  - In-app logo: Home's catalogue loading state shows the same logo, 216 wide on Daylight, for the
+    real load time only ([List](./features/list.md)). The Rubik wait and the native splash hide in
+    `_layout.tsx` are unchanged. A smooth hand-over from the native splash in a release build is
+    not verified.
 
 ## Technical core
 

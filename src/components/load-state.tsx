@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -10,10 +11,17 @@ import {
 import { AppText } from '@/components/app-text';
 import { Colors, Fonts, Radius, Spacing } from '@/constants/theme';
 
+type LoadingStateProps = {
+  /** Shown above the indicator, for example the logo on Home's first catalogue load. */
+  children?: ReactNode;
+  style?: StyleProp<ViewStyle>;
+};
+
 /** Shown while data loads for the first time. */
-export function LoadingState({ style }: { style?: StyleProp<ViewStyle> }) {
+export function LoadingState({ children, style }: LoadingStateProps) {
   return (
     <View style={[styles.container, style]}>
+      {children}
       <ActivityIndicator size="large" color={Colors.purple} accessibilityLabel="Loading" />
     </View>
   );
