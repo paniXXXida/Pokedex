@@ -15,6 +15,14 @@ export type PokemonStats = Record<StatKey, number>;
 /** The highest possible base stat: bars are drawn on a 0–255 scale (Detail and Compare). */
 export const MAX_BASE_STAT = 255;
 
+/** The highest possible Total (six stats at 255): the scale of Compare's Total bar. */
+export const MAX_TOTAL = MAX_BASE_STAT * STATS.length;
+
+/** Sum of the six base stats: Compare's Total row. */
+export function statTotal(stats: PokemonStats): number {
+  return STATS.reduce((sum, { key }) => sum + stats[key], 0);
+}
+
 /** Bar length as a fraction of the track, clamped to 0–1. */
 export function statFraction(value: number, max: number = MAX_BASE_STAT): number {
   return Math.min(Math.max(value / max, 0), 1);
