@@ -21,47 +21,28 @@ type PokemonGridProps = {
   empty?: ReactElement;
   /** The underlying list, for example to scroll back to the top when the results change. */
   ref?: Ref<FlatList<CatalogueEntry>>;
-  /**
-   * Picker mode (Compare): a card calls this instead of opening Detail, and the cards have no
-   * "⋮" and no options sheet.
-   */
-  onSelect?: (pokemon: CatalogueEntry) => void;
 };
 
-/** (available width − 2 × 24 − 16) / 2, rounded down so two cards always fit in a row. */
-export function gridCardWidth(windowWidth: number): number {
-  return Math.floor((windowWidth - 2 * Spacing.screen - Spacing.gap) / COLUMNS);
-}
-
 /**
- * Two-column virtualized grid of Pokémon cards with the options menu, shared by List, Search,
- * Favorites and the Compare picker. A card opens Detail (or calls `onSelect`); "⋮" opens the
- * options sheet. Dragging the grid closes the keyboard, and taps on cards work while it is open.
+ * Two-column virtualized grid of Pokémon cards with the options menu, shared by List, Search
+ * and Favorites. A card opens Detail; "⋮" opens the options sheet. Dragging the grid closes the
+ * keyboard, and taps on cards work while it is open.
  */
-export function PokemonGrid({ pokemon, header, empty, ref, onSelect }: PokemonGridProps) {
+export function PokemonGrid({ pokemon, header, empty, ref }: PokemonGridProps) {
   const { width: windowWidth } = useWindowDimensions();
   const [headerHeight, setHeaderHeight] = useState(0);
   const [menuPokemon, setMenuPokemon] = useState<CatalogueEntry | null>(null);
   const [menuVisible, setMenuVisible] = useState(false);
 
-  const cardWidth = gridCardWidth(windowWidth);
+  // (available width − 2 × 24 − 16) / 2, rounded down so two cards always fit in a row.
+  const cardWidth = Math.floor((windowWidth - 2 * Spacing.screen - Spacing.gap) / COLUMNS);
   // Every row is one card high plus the 16 gap below it.
   const rowLength = cardWidth + CARD_FOOTER_HEIGHT + Spacing.gap;
-  const isPicker = onSelect !== undefined;
 
   function openMenu(entry: CatalogueEntry) {
     Keyboard.dismiss();
     setMenuPokemon(entry);
     setMenuVisible(true);
-  }
-
-  function pressCard(entry: CatalogueEntry) {
-    if (onSelect === undefined) {
-      openPokemon(entry);
-      return;
-    }
-    Keyboard.dismiss();
-    onSelect(entry);
   }
 
   return (
@@ -75,8 +56,8 @@ export function PokemonGrid({ pokemon, header, empty, ref, onSelect }: PokemonGr
           <PokemonCard
             pokemon={item}
             width={cardWidth}
-            onPress={pressCard}
-            onOptionsPress={isPicker ? undefined : openMenu}
+            onPress={openPokemon}
+            onOptionsPress={openMenu}
           />
         )}
         ListHeaderComponent={
@@ -98,14 +79,12 @@ export function PokemonGrid({ pokemon, header, empty, ref, onSelect }: PokemonGr
         // The first tap on a card or "⋮" works while the keyboard is open.
         keyboardShouldPersistTaps="handled"
       />
-      {!isPicker && (
-        <PokemonOptionsSheet
-          pokemon={menuPokemon}
-          visible={menuVisible}
-          onClose={() => setMenuVisible(false)}
-          onOpenPokemon={openPokemon}
-        />
-      )}
+      <PokemonOptionsSheet
+        pokemon={menuPokemon}
+        visible={menuVisible}
+        onClose={() => setMenuVisible(false)}
+        onOpenPokemon={openPokemon}
+      />
     </>
   );
 }

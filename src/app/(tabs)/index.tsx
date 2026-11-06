@@ -1,4 +1,5 @@
-import { StyleSheet, View } from 'react-native';
+import { useMemo, useRef, useState } from 'react';
+import { type FlatList, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText } from '@/components/app-text';
@@ -6,8 +7,9 @@ import { EmptyState, ErrorState, LoadingState } from '@/components/load-state';
 import { PokemonGrid } from '@/components/pokemon-grid';
 import { SearchField } from '@/components/search-field';
 import { Colors, Spacing } from '@/constants/theme';
-import { useCatalogueSearch } from '@/hooks/use-catalogue-search';
-import { describeLoadError } from '@/services/pokeapi';
+import { useCatalogue } from '@/hooks/use-catalogue';
+import { type CatalogueEntry, describeLoadError } from '@/services/pokeapi';
+import { filterByName, normalizeSearchText } from '@/utils/pokemon-search';
 
 /** Figma: the field sits at X=16 on both platforms; its width follows the screen. */
 const SEARCH_FIELD_MARGIN = 16;
@@ -20,7 +22,26 @@ const SEARCH_FIELD_TOP = 16;
 const LIST_TOP_GAP = 32;
 
 export default function PokemonListScreen() {
-  const { catalogue, gridRef, rawQuery, changeQuery, isSearching, results } = useCatalogueSearch();
+  const catalogue = useCatalogue();
+  const gridRef = useRef<FlatList<CatalogueEntry>>(null);
+  // The query exactly as typed; only its normalised form is used for searching.
+  const [rawQuery, setRawQuery] = useState('');
+  const searchText = normalizeSearchText(rawQuery);
+  const isSearching = searchText !== '';
+
+  // Filtered on the phone from the complete index: no API request per keystroke.
+  const results = useMemo(
+    () => (catalogue.data === undefined ? undefined : filterByName(catalogue.data, searchText)),
+    [catalogue.data, searchText],
+  );
+
+  function changeQuery(text: string) {
+    // New results start at the top, also after scrolling deep into the full list.
+    if (normalizeSearchText(text) !== searchText) {
+      gridRef.current?.scrollToOffset({ offset: 0, animated: false });
+    }
+    setRawQuery(text);
+  }
 
   // Scrolls with the grid. The title is hidden while searching (search.md).
   const listTop = (

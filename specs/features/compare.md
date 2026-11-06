@@ -23,20 +23,6 @@ Put any two Pokémon side by side and see who is stronger on each stat.
   - Equal values: both plain, with "=" between them.
 - The selection stays while the app runs, also when switching tabs. It is not saved after a restart.
 - Layout adapts to the width without horizontal overflow.
-- Decided while planning #6 (agreed with the user):
-  - The picker is a stack screen above the tabs, `/compare-picker/left` or `/compare-picker/right`,
-    with the app's back button. Going back without a tap changes nothing. A second tap is ignored.
-  - The selection (`{ id, name }` per slot) is kept in memory above the root Stack, not in route
-    params: the Expo Router 58 docs do not define how params are merged when returning to a
-    screen. A slot shows its card at once; its stats load separately.
-  - The same Pokémon in both slots uses the one `['pokemon', id]` cache entry. A replaced slot
-    shows its loading state until its own stats arrive, never the previous Pokémon's stats.
-  - Rows appear only when both sides have their stats. Equal values: both bars Silver
-    (follows from "no highlight").
-  - Assumptions without a design: slots are list-card sized; an empty slot is a white card with
-    a Purple "+"; a filled slot is the list card without "⋮" plus a Purple "Change" label. The
-    label is centred above both sides, bars grow from the centre outwards, and a Silver line
-    sits above Total.
 
 ## Acceptance Criteria
 

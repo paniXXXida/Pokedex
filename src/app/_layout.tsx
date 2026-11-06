@@ -7,7 +7,6 @@ import { useEffect } from 'react';
 import { FontLoadError } from '@/components/font-load-error';
 import { Colors } from '@/constants/theme';
 import { useAppFonts } from '@/hooks/use-app-fonts';
-import { CompareSelectionProvider } from '@/hooks/use-compare-selection';
 import { queryClient } from '@/services/query-client';
 
 // Keep the splash visible until the fonts are loaded, so text never flashes in another font.
@@ -27,22 +26,19 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CompareSelectionProvider>
-        <StatusBar style="dark" />
-        <Stack
-          screenOptions={{
-            contentStyle: { backgroundColor: Colors.daylight },
-            headerStyle: { backgroundColor: Colors.daylight },
-            headerShadowVisible: false,
-            headerTintColor: Colors.midnight,
-            // iOS back label from the design; Android shows only the arrow.
-            headerBackTitle: 'Vorige',
-          }}>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="pokemon/[id]" options={{ title: '' }} />
-          <Stack.Screen name="compare-picker/[slot]" options={{ title: '' }} />
-        </Stack>
-      </CompareSelectionProvider>
+      <StatusBar style="dark" />
+      <Stack
+        screenOptions={{
+          contentStyle: { backgroundColor: Colors.daylight },
+          headerStyle: { backgroundColor: Colors.daylight },
+          headerShadowVisible: false,
+          headerTintColor: Colors.midnight,
+          // iOS back label from the design; Android shows only the arrow.
+          headerBackTitle: 'Vorige',
+        }}>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="pokemon/[id]" options={{ title: '' }} />
+      </Stack>
     </QueryClientProvider>
   );
 }

@@ -17,8 +17,7 @@ type PokemonCardProps = {
   /** The image area is square, so the card is `width` + footer high. */
   width: number;
   onPress: (pokemon: CatalogueEntry) => void;
-  /** Without it the card has no "⋮" (Compare picker and slots); the footer keeps its height. */
-  onOptionsPress?: (pokemon: CatalogueEntry) => void;
+  onOptionsPress: (pokemon: CatalogueEntry) => void;
 };
 
 export function PokemonCard({ pokemon, width, onPress, onOptionsPress }: PokemonCardProps) {
@@ -58,18 +57,16 @@ export function PokemonCard({ pokemon, width, onPress, onOptionsPress }: Pokemon
         <AppText variant="medium" numberOfLines={1} style={styles.name}>
           {name}
         </AppText>
-        {onOptionsPress !== undefined && (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={`Options for ${name}`}
-            hitSlop={FOOTER_PADDING}
-            onPress={() => onOptionsPress(pokemon)}
-            style={styles.menuIcon}>
-            <View style={[styles.menuDot, styles.menuDotTop]} />
-            <View style={[styles.menuDot, styles.menuDotMiddle]} />
-            <View style={[styles.menuDot, styles.menuDotBottom]} />
-          </Pressable>
-        )}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Options for ${name}`}
+          hitSlop={FOOTER_PADDING}
+          onPress={() => onOptionsPress(pokemon)}
+          style={styles.menuIcon}>
+          <View style={[styles.menuDot, styles.menuDotTop]} />
+          <View style={[styles.menuDot, styles.menuDotMiddle]} />
+          <View style={[styles.menuDot, styles.menuDotBottom]} />
+        </Pressable>
       </View>
     </Pressable>
   );

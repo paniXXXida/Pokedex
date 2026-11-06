@@ -81,8 +81,8 @@ Find a Pokémon and look at its details.
   tab style (iOS purple icon + label, Android pill), and the Android search field showing a back
   arrow while typing.
 - **Navigation**: bottom tabs Pokémons / Favorites / Compare. Compare is added because the
-  feature is mandatory and has no design; it uses the same tab style. Detail and the Compare
-  picker are stack screens on top of the tabs.
+  feature is mandatory and has no design; it uses the same tab style. Detail is a stack screen on
+  top of the tabs.
   - The tab bar uses Expo Router's JavaScript `Tabs`, not native tabs. Changed during Setup (#1):
     native tabs on iOS 26 use the system "Liquid Glass" bar, which ignores the background and
     cannot reproduce the Figma bar; JS tabs draw the design's bar on both platforms.
