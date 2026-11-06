@@ -52,28 +52,31 @@ There are five required features. Each needs a feature spec and a GitHub issue. 
 - `src/utils/`: pure helpers without React, API or SQL.
 - Reuse existing shared clients, providers, database initialization, and components. Do not introduce a second QueryClient, API client, or database initialization path for another feature.
 - Shared infrastructure that exists now:
-  - `src/app/_layout.tsx`: root `Stack` (`(tabs)` + `pokemon/[id]`), the only `QueryClientProvider`, splash held until fonts load.
+  - `src/app/_layout.tsx`: root `Stack` (`(tabs)` + `pokemon/[id]` + `compare-picker/[slot]`), the only `QueryClientProvider`, `CompareSelectionProvider`, splash held until fonts load.
   - `src/app/(tabs)/_layout.tsx`: JavaScript `Tabs` (Pokémons / Favorites / Compare) styled per platform after Figma.
   - `src/services/query-client.ts`: the one `QueryClient`.
   - `src/hooks/use-app-fonts.ts`: loads Rubik (`assets/fonts/`) with Expo Font, with retry; `src/components/font-load-error.tsx` is its error screen.
   - `src/components/app-text.tsx`: `AppText`, Rubik text with variants. Use it instead of a bare `Text`.
   - `src/components/tab-icon.tsx`: tab icon from a Figma PNG or an `expo-symbols` symbol.
-  - `src/components/screen-placeholder.tsx`: temporary screen content; remove it once no screen uses it.
   - `src/utils/pokemon-id.ts`: `parsePokemonId` for validating the `id` route param; `idFromResourceUrl` for ids in PokeAPI urls.
   - `src/utils/pokemon-format.ts`: `formatPokemonNumber` ("001"), `formatPokemonName` ("Mr Mime"), `buildShareMessage`.
   - `src/services/pokeapi.ts`: the only PokeAPI client. `fetchCatalogueIndex` (complete index), `fetchPokemon`, `spriteUrl`, `ApiError` (PokeAPI answered wrongly) and `describeLoadError` (separates that from "PokeAPI not reached").
   - `src/hooks/use-catalogue.ts`: `useCatalogue`, query key `['catalogue']`, loaded once per run; List and Search share it.
-  - `src/hooks/use-pokemon.ts`: `pokemonQueryOptions(id)`, query key `['pokemon', id]` (no retry on 404), `usePokemon`, `isNotFound`; shared by Share, Detail and Compare. Extend it; do not add a second `/pokemon/{id}` query. `Pokemon` carries types, species id, height, weight, base experience, abilities, `stats` and `artworkUrl`.
+  - `src/hooks/use-pokemon.ts`: `pokemonQueryOptions(id)`, query key `['pokemon', id]` (no retry on 404; waits with `skipToken` without an id), `usePokemon`, `isNotFound`; shared by Share, Detail and Compare. Extend it; do not add a second `/pokemon/{id}` query. `Pokemon` carries types, species id, height, weight, base experience, abilities, `stats` and `artworkUrl`.
   - `src/hooks/use-evolution.ts`: `speciesQueryOptions` (`['pokemon-species', speciesId]`), `evolutionChainQueryOptions` (`['evolution-chain', chainId]`), and `useEvolution(pokemon)` → loading / error with retry of the failed queries / cards (default Pokémon per species node, `current` by species id).
   - `src/utils/evolution-rows.ts`: `evolutionRows(tree)`, the pre-order rows (indent, connector, guide lines) that keep every parent → child link.
-  - `src/utils/pokemon-stats.ts`: `STATS` (keys + labels in order), `MAX_BASE_STAT` (255), `statFraction`; for Detail and Compare.
+  - `src/utils/pokemon-stats.ts`: `STATS` (keys + labels in order), `MAX_BASE_STAT` (255), `MAX_TOTAL` (1530), `statTotal`, `statFraction`; for Detail and Compare.
+  - `src/utils/compare-stats.ts`: `CompareSlot` (`'left' | 'right'`), `parseCompareSlot` for the picker's route param, `compareRows` (six stats + Total, bar fractions, higher side or null).
+  - `src/hooks/use-compare-selection.tsx`: `CompareSelectionProvider` (both slots in memory, not saved), `useCompareSelection`, and `useCompareSide(entry)` → empty / loading / error with retry of that side only / ready.
+  - `src/hooks/use-catalogue-search.ts`: `useCatalogueSearch`, the search state over `useCatalogue` shared by List and the Compare picker.
+  - `src/components/compare-slot.tsx` and `src/components/compare-rows.tsx`: the Compare parts.
   - `src/utils/favorite-message.ts`: `favoriteMessage`, the favorites write/read/refresh texts shared by the options sheet and the Detail heart.
   - `src/components/type-chip.tsx`, `src/components/pokemon-image.tsx` (square image with the "?" placeholder), `src/components/favorite-button.tsx` (header heart from Figma PNGs), `src/components/pokemon-about.tsx`, `src/components/pokemon-stats.tsx`, `src/components/evolution-tree.tsx`: the Detail parts.
   - `src/hooks/use-share-pokemon.ts`: system Share from the cached Pokémon query; ignores repeated taps, and `cancel()` drops a pending share.
-  - `src/components/pokemon-grid.tsx`: two-column `FlatList` with fixed row heights (`getItemLayout`), a measured header slot (it carries its own spacing to the first row and may change height), an optional `empty` element, a `ref` to the list, keyboard handling (drag closes it, taps work while it is open) and the options sheet; reuse it for Search and Favorites.
-  - `src/components/pokemon-card.tsx`: the list card (`CARD_FOOTER_HEIGHT` keeps every row the same height).
+  - `src/components/pokemon-grid.tsx`: two-column `FlatList` with fixed row heights (`getItemLayout`), a measured header slot (it carries its own spacing to the first row and may change height), an optional `empty` element, a `ref` to the list, keyboard handling (drag closes it, taps work while it is open) and the options sheet; reuse it for Search and Favorites. `onSelect` turns it into a picker (no "⋮", no sheet); `gridCardWidth` gives the card width.
+  - `src/components/pokemon-card.tsx`: the list card (`CARD_FOOTER_HEIGHT` keeps every row the same height); without `onOptionsPress` it has no "⋮".
   - `src/components/pokemon-options-sheet.tsx`: the "⋮" sheet (Open Pokémon / favorites / Share), iOS and Android variants.
-  - `src/components/load-state.tsx`: `LoadingState`, `ErrorState` with Try again (or another `actionLabel`, such as Back on "Pokémon not found"), for every load, `EmptyState` (title + optional hint) for loaded data without entries, and `RefreshError` (message + Try again) above data kept after a failed refresh.
+  - `src/components/load-state.tsx`: `LoadingState` and `ErrorState` (optional `style`, e.g. `flex: 0` inside a scroll view), `ErrorState` with Try again (or another `actionLabel`, such as Back on "Pokémon not found"), for every load, `EmptyState` (title + optional hint) for loaded data without entries, and `RefreshError` (message + Try again) above data kept after a failed refresh.
   - `src/services/database.ts`: `getDatabase()`, the only SQLite open + table-creation path; a failure at any stage resets it so a retry runs again.
   - `src/services/favorites.ts`: `getFavorites` (newest first), `addFavorite` (`INSERT OR IGNORE`), `removeFavorite`; parameterized SQL, rows checked.
   - `src/hooks/use-favorites.ts`: `favoritesQueryOptions` (key `['favorites']`, `networkMode: 'always'`, `retry: false`), `useFavorites`, and `useFavoriteToggle(entry)` for the options sheet and the Detail heart: write, then an awaited real re-read; separate write/refresh errors; `canToggle` only on up-to-date data.

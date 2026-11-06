@@ -1,4 +1,4 @@
-import { queryOptions, useQuery } from '@tanstack/react-query';
+import { queryOptions, skipToken, useQuery } from '@tanstack/react-query';
 
 import { ApiError, fetchPokemon } from '@/services/pokeapi';
 
@@ -9,16 +9,17 @@ const MAX_RETRIES = 3;
  * The `/pokemon/{id}` query, one cache entry per id, shared by Share, Detail and Compare (#6),
  * so data loaded by one is reused by the others.
  * A 404 is not retried: the id does not exist, so Detail shows "Pokémon not found" at once.
+ * Without an id (an empty Compare slot) the query waits (`skipToken`).
  */
-export function pokemonQueryOptions(id: number) {
+export function pokemonQueryOptions(id: number | undefined) {
   return queryOptions({
     queryKey: ['pokemon', id],
-    queryFn: ({ signal }) => fetchPokemon(id, signal),
+    queryFn: id === undefined ? skipToken : ({ signal }) => fetchPokemon(id, signal),
     retry: (failureCount, error) => !isNotFound(error) && failureCount < MAX_RETRIES,
   });
 }
 
-export function usePokemon(id: number) {
+export function usePokemon(id: number | undefined) {
   return useQuery(pokemonQueryOptions(id));
 }
 

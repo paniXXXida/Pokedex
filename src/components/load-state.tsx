@@ -11,9 +11,9 @@ import { AppText } from '@/components/app-text';
 import { Colors, Fonts, Radius, Spacing } from '@/constants/theme';
 
 /** Shown while data loads for the first time. */
-export function LoadingState() {
+export function LoadingState({ style }: { style?: StyleProp<ViewStyle> }) {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <ActivityIndicator size="large" color={Colors.purple} accessibilityLabel="Loading" />
     </View>
   );
@@ -27,6 +27,8 @@ type ErrorStateProps = {
   onRetry: () => void;
   /** Button text when the way out is not a retry, for example "Back" for "Pokémon not found". */
   actionLabel?: string;
+  /** For example to size it by its content instead of filling the space (a Compare slot). */
+  style?: StyleProp<ViewStyle>;
 };
 
 /** A failed load with Try again. Same layout as the font error screen, in Rubik. */
@@ -36,9 +38,10 @@ export function ErrorState({
   retrying,
   onRetry,
   actionLabel = 'Try again',
+  style,
 }: ErrorStateProps) {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <AppText variant="medium">{title}</AppText>
       <AppText style={styles.message}>{message}</AppText>
       <Pressable
